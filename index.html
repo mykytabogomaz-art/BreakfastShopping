@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Покупки для сніданку</title>
+<style>
+  :root {
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --ink: #1f2a3a;
+    --muted: #6b778a;
+    --accent: #00539f;
+    --accent-soft: #e5eef8;
+    --red: #e4002b;
+    --ok: #1f8a4c;
+    --ok-soft: #e3f4ea;
+    --bad: #c8372d;
+    --bad-soft: #fbe7e5;
+    --line: #dbe2ec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.45;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  h1 {
+    grid-column: 1 / -1;
+    margin: 4px 0 0;
+    font-size: 28px;
+  }
+
+  /* ---------- Умова (завжди на екрані) ---------- */
+  .condition {
+    position: sticky;
+    top: 16px;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
+    overflow: hidden;
+  }
+  .cond-head {
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cond-head .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); }
+  .cond-body { padding: 14px 18px 18px; }
+  .cond-body p { margin: 0 0 10px; }
+  .receipt {
+    background: #fffdf6;
+    border: 1px dashed #c9bfa4;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    margin: 10px 0 12px;
+  }
+  .receipt .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 6px;
+    border-radius: 6px;
+    transition: background .25s;
+  }
+  .receipt .row small { display: block; color: var(--muted); font-family: "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; }
+  .receipt .row.hl { background: #fff1b8; }
+  .receipt .price { font-weight: 700; white-space: nowrap; }
+  .paid {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  /* ---------- Запитання ---------- */
+  .quiz {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
+    padding: 20px 22px 24px;
+    min-height: 360px;
+  }
+  .progress { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  .progress span {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 15px; font-weight: 700;
+    background: #edf1f6; color: var(--muted);
+  }
+  .progress span.current { background: var(--accent); color: #fff; }
+  .progress span.done { background: var(--ok); color: #fff; }
+  .progress span.shown { background: #b9c3d1; color: #fff; }
+
+  .q-card { animation: slideIn .35s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .q-num { color: var(--muted); font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .q-text { font-size: 22px; font-weight: 700; margin: 6px 0 18px; }
+
+  .money-input { display: flex; align-items: center; gap: 8px; }
+  .money-input .pound { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .money-input input {
+    font-size: 24px;
+    width: 150px;
+    padding: 10px 12px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    outline: none;
+  }
+  .money-input input:focus { border-color: var(--accent); }
+
+  .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+  .choice {
+    font-size: 18px;
+    padding: 12px 18px;
+    border: 2px solid var(--line);
+    background: #fff;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .choice:hover { border-color: var(--accent); }
+  .choice.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+  .choice small { display: block; color: var(--muted); font-size: 14px; font-weight: 400; }
+
+  .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+  button.btn {
+    font-size: 18px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .btn-check { background: var(--accent); color: #fff; }
+  .btn-next { background: var(--ok); color: #fff; }
+  .btn-reveal { background: #edf1f6; color: var(--ink); }
+  .btn:disabled { opacity: .45; cursor: default; }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: none;
+  }
+  .feedback.ok { display: block; background: var(--ok-soft); color: #145c33; }
+  .feedback.bad { display: block; background: var(--bad-soft); color: #8a2119; }
+  .feedback .calc { font-family: "Courier New", monospace; font-weight: 700; display: block; margin-top: 4px; }
+
+  .final { text-align: center; padding: 30px 10px; animation: slideIn .35s ease; }
+  .final .big { font-size: 56px; font-weight: 800; color: var(--accent); }
+  .final p { font-size: 20px; }
+
+  @media (max-width: 820px) {
+    .wrap { grid-template-columns: 1fr; gap: 14px; padding-top: 12px; }
+    h1 { font-size: 23px; }
+    .condition { position: static; }
+    .cond-body { padding: 10px 14px 14px; }
+    .cond-body p { font-size: 16px; margin-bottom: 6px; }
+    .receipt { font-size: 15px; padding: 6px 10px; margin: 6px 0 8px; }
+    .receipt .row { padding: 3px 4px; }
+    .receipt .row small { display: inline; margin-left: 4px; }
+    .quiz { padding: 16px; min-height: 0; }
+    .q-text { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛒 Покупки для сніданку</h1>
+
+  <!-- Умова -->
+  <aside class="condition">
+    <div class="cond-head"><span class="dot"></span> Умова задачі</div>
+    <div class="cond-body">
+      <p>Марія зайшла до супермаркету <b>Tesco</b>. Вона хоче купити продукти для сніданку.</p>
+      <p>Вона купила:</p>
+      <div class="receipt">
+        <div class="row" data-item="bread"><span>🍞 sliced bread <small>нарізаний хліб</small></span><span class="price">£1.25</span></div>
+        <div class="row" data-item="milk"><span>🥛 milk, 1 litre <small>молоко</small></span><span class="price">£1.15</span></div>
+        <div class="row" data-item="banana"><span>🍌 banana <small>банан</small></span><span class="price">£0.25</span></div>
+        <div class="row" data-item="yogurt"><span>🥣 yogurt, 500 g <small>йогурт</small></span><span class="price">£1.30</span></div>
+      </div>
+      <span class="paid">💷 Марія дала касиру £5</span>
+    </div>
+  </aside>
+
+  <!-- Запитання -->
+  <main class="quiz">
+    <div class="progress" id="progress"></div>
+    <div id="stage"></div>
+  </main>
+</div>
+
+<script>
+  const QUESTIONS = [
+    {
+      text: "Скільки всього коштують покупки?",
+      type: "money",
+      answer: 3.95,
+      hint: "Додай ціни всіх чотирьох продуктів.",
+      explain: "£1.25 + £1.15 + £0.25 + £1.30 = £3.95"
+    },
+    {
+      text: "Скільки фунтів Марія заплатила касиру?",
+      type: "money",
+      answer: 5,
+      hint: "Подивись на останній рядок умови.",
+      explain: "Марія дала касиру £5."
+    },
+    {
+      text: "Скільки грошей вона має отримати на решту?",
+      type: "money",
+      answer: 1.05,
+      hint: "Від суми, яку дала Марія, відніми вартість покупок (£3.95).",
+      explain: "£5.00 − £3.95 = £1.05"
+    },
+    {
+      text: "Які два продукти коштують разом £2.40?",
+      type: "pick2",
+      answer: ["bread", "milk"],
+      hint: "Спробуй додати ціни по два продукти. Сума має бути рівно £2.40.",
+      explain: "Хліб + молоко: £1.25 + £1.15 = £2.40"
+    },
+    {
+      text: "Якщо Марія купить ще яблуко за £0.35, скільки коштуватимуть усі покупки?",
+      type: "money",
+      answer: 4.30,
+      hint: "До загальної суми (£3.95) додай ціну яблука.",
+      explain: "£3.95 + £0.35 = £4.30"
+    },
+    {
+      text: "Якщо Марія має £3, чи вистачить їй на хліб, молоко та банан?",
+      type: "yesno",
+      answer: "yes",
+      highlight: ["bread", "milk", "banana"],
+      hint: "Спочатку порахуй, скільки коштують хліб, молоко та банан, а потім порівняй з £3.",
+      explain: "£1.25 + £1.15 + £0.25 = £2.65. Це менше, ніж £3, тому вистачить (ще й залишиться £0.35)."
+    },
+    {
+      text: "Скільки грошей залишиться після покупки хліба та йогурту, якщо Марія має £5?",
+      type: "money",
+      answer: 2.45,
+      highlight: ["bread", "yogurt"],
+      hint: "Додай ціни хліба та йогурту, а потім відніми цю суму від £5.",
+      explain: "£1.25 + £1.30 = £2.55;  £5.00 − £2.55 = £2.45"
+    }
+  ];
+
+  const PRODUCTS = [
+    { id: "bread",  label: "🍞 sliced bread", ua: "хліб" },
+    { id: "milk",   label: "🥛 milk",         ua: "молоко" },
+    { id: "banana", label: "🍌 banana",       ua: "банан" },
+    { id: "yogurt", label: "🥣 yogurt",       ua: "йогурт" }
+  ];
+
+  let current = 0;
+  let attempts = 0;
+  let firstTry = 0;
+  const status = []; // "done" | "shown"
+
+  const stage = document.getElementById("stage");
+  const progressEl = document.getElementById("progress");
+
+  function renderProgress() {
+    progressEl.innerHTML = "";
+    QUESTIONS.forEach((_, i) => {
+      const s = document.createElement("span");
+      s.textContent = i + 1;
+      if (status[i]) s.className = status[i];
+      else if (i === current) s.className = "current";
+      progressEl.appendChild(s);
+    });
+  }
+
+  function highlight(items) {
+    document.querySelectorAll(".receipt .row").forEach(r => {
+      r.classList.toggle("hl", !!items && items.includes(r.dataset.item));
+    });
+  }
+
+  function parseMoney(str) {
+    const clean = str.replace("£", "").replace(",", ".").trim();
+    if (clean === "" || isNaN(Number(clean))) return null;
+    return Number(clean);
+  }
+
+  function renderQuestion() {
+    attempts = 0;
+    const q = QUESTIONS[current];
+    highlight(q.highlight);
+    renderProgress();
+
+    let inputHtml = "";
+    if (q.type === "money") {
+      inputHtml = `<div class="money-input"><span class="pound">£</span>
+        <input id="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>`;
+    } else if (q.type === "pick2") {
+      inputHtml = `<p style="margin:0 0 10px;color:var(--muted)">Вибери два продукти:</p><div class="choices">` +
+        PRODUCTS.map(p => `<button class="choice" data-id="${p.id}">${p.label}<small>${p.ua}</small></button>`).join("") +
+        `</div>`;
+    } else if (q.type === "yesno") {
+      inputHtml = `<div class="choices">
+        <button class="choice" data-id="yes">✅ Так, вистачить</button>
+        <button class="choice" data-id="no">❌ Ні, не вистачить</button></div>`;
+    }
+
+    stage.innerHTML = `
+      <div class="q-card">
+        <div class="q-num">Запитання ${current + 1} з ${QUESTIONS.length}</div>
+        <div class="q-text">${q.text}</div>
+        ${inputHtml}
+        <div class="actions">
+          <button class="btn btn-check" id="check">Перевірити</button>
+          <button class="btn btn-reveal" id="reveal" style="display:none">Показати відповідь</button>
+          <button class="btn btn-next" id="next" style="display:none">Далі →</button>
+        </div>
+        <div class="feedback" id="fb"></div>
+      </div>`;
+
+    // вибір варіантів
+    stage.querySelectorAll(".choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        if (q.type === "yesno") {
+          stage.querySelectorAll(".choice").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        } else {
+          const selected = stage.querySelectorAll(".choice.selected");
+          if (btn.classList.contains("selected")) btn.classList.remove("selected");
+          else if (selected.length < 2) btn.classList.add("selected");
+        }
+      });
+    });
+
+    const input = document.getElementById("ans");
+    if (input) {
+      input.focus();
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          const next = document.getElementById("next");
+          if (next.style.display !== "none") next.click();
+          else document.getElementById("check").click();
+        }
+      });
+    }
+
+    document.getElementById("check").addEventListener("click", check);
+    document.getElementById("reveal").addEventListener("click", reveal);
+    document.getElementById("next").addEventListener("click", goNext);
+  }
+
+  function getUserAnswer(q) {
+    if (q.type === "money") return parseMoney(document.getElementById("ans").value);
+    const sel = [...stage.querySelectorAll(".choice.selected")].map(b => b.dataset.id);
+    if (q.type === "pick2") return sel.length === 2 ? sel : null;
+    if (q.type === "yesno") return sel.length === 1 ? sel[0] : null;
+  }
+
+  function isCorrect(q, a) {
+    if (q.type === "money") return Math.abs(a - q.answer) < 0.001;
+    if (q.type === "pick2") return q.answer.every(id => a.includes(id));
+    return a === q.answer;
+  }
+
+  function showFeedback(kind, html) {
+    const fb = document.getElementById("fb");
+    fb.className = "feedback " + kind;
+    fb.innerHTML = html;
+  }
+
+  function lockInputs() {
+    stage.querySelectorAll("input, .choice").forEach(el => el.disabled = true);
+    document.getElementById("check").style.display = "none";
+    document.getElementById("reveal").style.display = "none";
+    const next = document.getElementById("next");
+    next.style.display = "inline-block";
+    next.textContent = current === QUESTIONS.length - 1 ? "Завершити ✓" : "Далі →";
+    next.focus();
+  }
+
+  function check() {
+    const q = QUESTIONS[current];
+    const a = getUserAnswer(q);
+    if (a === null) {
+      const msg = q.type === "money" ? "Впиши число, наприклад 2.50"
+                : q.type === "pick2" ? "Вибери два продукти."
+                : "Вибери відповідь.";
+      showFeedback("bad", msg);
+      return;
+    }
+    attempts++;
+    if (isCorrect(q, a)) {
+      if (attempts === 1) firstTry++;
+      status[current] = "done";
+      showFeedback("ok", `🎉 Правильно!<span class="calc">${q.explain}</span>`);
+      lockInputs();
+      renderProgress();
+    } else {
+      showFeedback("bad", `Ще не так. Спробуй ще раз.<br>💡 ${q.hint}`);
+      if (attempts >= 2) document.getElementById("reveal").style.display = "inline-block";
+    }
+  }
+
+  function reveal() {
+    const q = QUESTIONS[current];
+    status[current] = "shown";
+    if (q.type === "money") {
+      document.getElementById("ans").value = q.answer.toFixed(2);
+    } else {
+      const right = Array.isArray(q.answer) ? q.answer : [q.answer];
+      stage.querySelectorAll(".choice").forEach(b => b.classList.toggle("selected", right.includes(b.dataset.id)));
+    }
+    showFeedback("ok", `Правильна відповідь:<span class="calc">${q.explain}</span>`);
+    lockInputs();
+    renderProgress();
+  }
+
+  function goNext() {
+    current++;
+    if (current < QUESTIONS.length) renderQuestion();
+    else renderFinal();
+  }
+
+  function renderFinal() {
+    highlight(null);
+    renderProgress();
+    const total = QUESTIONS.length;
+    const msg = firstTry === total ? "Чудово! Усе правильно з першої спроби! 🌟"
+              : firstTry >= total - 2 ? "Дуже добре! 👍"
+              : "Молодець, що дійшов до кінця! Спробуй ще раз 💪";
+    stage.innerHTML = `
+      <div class="final">
+        <div class="big">${firstTry} / ${total}</div>
+        <p>правильних відповідей з першої спроби</p>
+        <p><b>${msg}</b></p>
+        <div class="actions" style="justify-content:center">
+          <button class="btn btn-check" id="restart">Пройти ще раз ↻</button>
+        </div>
+      </div>`;
+    document.getElementById("restart").addEventListener("click", () => {
+      current = 0; firstTry = 0; status.length = 0;
+      renderQuestion();
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>
