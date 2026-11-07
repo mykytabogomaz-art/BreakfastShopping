@@ -91,29 +91,36 @@
   }
 
   /* ---------- Запитання ---------- */
-  .quiz { display: flex; flex-direction: column; gap: 16px; }
+  .quiz {
+    display: flex; flex-direction: column; gap: 12px;
+    max-height: 75vh;
+    overflow-y: auto;
+    padding: 2px 6px 2px 2px;
+    scroll-behavior: smooth;
+  }
   .q-card {
     background: var(--card);
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
-    padding: 18px 22px 20px;
+    padding: 14px 18px 16px;
+    flex-shrink: 0;
     animation: slideIn .35s ease;
     border-left: 6px solid var(--accent);
   }
   .q-card.solved { border-left-color: var(--ok); }
   .q-card.shown { border-left-color: #b9c3d1; }
   @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  .q-num { color: var(--muted); font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-  .q-text { font-size: 22px; font-weight: 700; margin: 4px 0 16px; }
+  .q-num { color: var(--muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .q-text { font-size: 17px; font-weight: 700; margin: 2px 0 12px; }
 
-  .eq-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .eq-label { width: 100%; color: var(--muted); font-size: 16px; margin-bottom: -2px; }
-  .eq-sign { font-size: 30px; font-weight: 700; color: var(--accent); }
+  .eq-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .eq-label { width: 100%; color: var(--muted); font-size: 14px; margin-bottom: -2px; }
+  .eq-sign { font-size: 22px; font-weight: 700; color: var(--accent); }
   .money-input { display: flex; align-items: center; gap: 6px; }
-  .pound { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .pound { font-size: 19px; font-weight: 700; color: var(--accent); }
   input.field {
-    font-size: 24px;
-    padding: 10px 12px;
+    font-size: 17px;
+    padding: 7px 10px;
     border: 2px solid var(--line);
     border-radius: 10px;
     outline: none;
@@ -125,13 +132,15 @@
   input.field.wrong { border-color: var(--bad); background: var(--bad-soft); }
   input.field.right { border-color: var(--ok); background: var(--ok-soft); }
   input.field:disabled { color: var(--ink); opacity: 1; }
-  input.answer { width: 130px; }
-  input.expr { flex: 1 1 360px; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
+  input.answer { width: 100px; }
+  input.part { width: 70px; text-align: center; }
+  .unit { font-size: 17px; font-weight: 700; color: var(--accent); }
+  input.expr { flex: 1 1 320px; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
 
   .choices { display: flex; flex-wrap: wrap; gap: 10px; }
   .choice {
-    font-size: 18px;
-    padding: 12px 18px;
+    font-size: 16px;
+    padding: 8px 14px;
     border: 2px solid var(--line);
     background: #fff;
     border-radius: 12px;
@@ -142,12 +151,12 @@
   .choice:hover:not(:disabled) { border-color: var(--accent); }
   .choice.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
   .choice:disabled { cursor: default; }
-  .choice small { display: block; color: var(--muted); font-size: 14px; font-weight: 400; }
+  .choice small { display: block; color: var(--muted); font-size: 13px; font-weight: 400; }
 
-  .actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
   button.btn {
-    font-size: 18px;
-    padding: 12px 22px;
+    font-size: 16px;
+    padding: 9px 18px;
     border: none;
     border-radius: 12px;
     cursor: pointer;
@@ -159,8 +168,9 @@
   .btn-reveal { background: #edf1f6; color: var(--ink); }
 
   .feedback {
-    margin-top: 14px;
-    padding: 12px 16px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 15px;
     border-radius: 12px;
     display: none;
   }
@@ -173,11 +183,12 @@
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
     text-align: center;
-    padding: 24px 16px;
+    padding: 16px;
+    flex-shrink: 0;
     animation: slideIn .35s ease;
   }
-  .final .big { font-size: 48px; font-weight: 800; color: var(--accent); }
-  .final p { font-size: 20px; margin: 6px 0; }
+  .final .big { font-size: 40px; font-weight: 800; color: var(--accent); }
+  .final p { font-size: 17px; margin: 4px 0; }
 
   @media (max-width: 820px) {
     .wrap { grid-template-columns: 1fr; gap: 14px; padding-top: 12px; }
@@ -188,9 +199,9 @@
     .receipt { font-size: 15px; padding: 6px 10px; margin: 6px 0 8px; }
     .receipt .row { padding: 3px 4px; }
     .receipt .row small { display: inline; margin-left: 4px; }
-    .q-card { padding: 16px; }
-    .q-text { font-size: 20px; }
-    input.expr { flex-basis: 100%; font-size: 20px; }
+    .q-card { padding: 12px 14px; }
+    .q-text { font-size: 16px; }
+    input.expr { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -228,10 +239,12 @@
       exprLabel: "Запиши суму всіх продуктів:",
       op: "+",
       numbers: [1.25, 1.15, 0.25, 1.35],
+      split: { pounds: 3, pence: 100 },
       answer: 4.00,
       exprHint: "Запиши через «+» ціни всіх чотирьох продуктів з чека.",
-      hint: "Додай ціни всіх чотирьох продуктів.",
-      explain: "£1.25 + £1.15 + £0.25 + £1.35 = £4.00"
+      splitHint: "Склади окремо всі фунти (числа перед крапкою) і окремо всі пенси (числа після крапки).",
+      hint: "Перетвори пенси на фунти: 100p = £1. Додай їх до фунтів.",
+      explain: "£1.25 + £1.15 + £0.25 + £1.35 = £3 + 100p = £4.00"
     },
     {
       text: "Скільки фунтів Марія заплатила касиру?",
@@ -318,6 +331,11 @@
           <div class="eq-label">${q.exprLabel}</div>
           <input class="field expr" data-role="expr" inputmode="decimal" autocomplete="off">
           <span class="eq-sign">=</span>
+          ${q.split ? `
+          <span class="money-input"><input class="field part" data-role="pounds" inputmode="numeric" autocomplete="off"><span class="unit">£</span></span>
+          <span class="eq-sign">+</span>
+          <span class="money-input"><input class="field part" data-role="pence" inputmode="numeric" autocomplete="off"><span class="unit">p</span></span>
+          <span class="eq-sign">=</span>` : ""}
           <span class="money-input"><span class="pound">£</span>
             <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off"></span>
         </div>`;
@@ -354,8 +372,9 @@
       inp.addEventListener("input", () => inp.classList.remove("wrong"));
       inp.addEventListener("keydown", e => {
         if (e.key !== "Enter") return;
-        if (inp.dataset.role === "expr") card.querySelector('[data-role="ans"]').focus();
-        else check(card, q);
+        const all = [...card.querySelectorAll("input.field")];
+        const next = all[all.indexOf(inp) + 1];
+        if (next) next.focus(); else check(card, q);
       });
     });
 
@@ -382,8 +401,12 @@
     if (q.type === "expr") {
       const ex = parseExpr(exprInp.value);
       const ans = parseMoney(ansInp.value);
-      if (exprInp.value.trim() === "" || ans === null) {
-        showFeedback(card, "bad", "Заповни обидва поля: запиши дію, а після «=» — відповідь.");
+      const poundsInp = card.querySelector('[data-role="pounds"]');
+      const penceInp = card.querySelector('[data-role="pence"]');
+      const pounds = poundsInp ? parseMoney(poundsInp.value) : 0;
+      const pence = penceInp ? parseMoney(penceInp.value.replace(/p/gi, "")) : 0;
+      if (exprInp.value.trim() === "" || ans === null || pounds === null || pence === null) {
+        showFeedback(card, "bad", "Заповни всі поля.");
         return;
       }
       const opsOk = ex && ex.ops.every(o => o === q.op);
@@ -394,8 +417,16 @@
       const ansOk = eq(ans, q.answer);
       exprInp.classList.toggle("wrong", !exprOk);
       ansInp.classList.toggle("wrong", !ansOk);
-      ok = exprOk && ansOk;
-      if (!exprOk && !ansOk) msg = `Перевір і дію, і відповідь.<br>💡 ${q.exprHint}`;
+      let splitOk = true;
+      if (q.split) {
+        const pOk = eq(pounds, q.split.pounds), cOk = eq(pence, q.split.pence);
+        poundsInp.classList.toggle("wrong", !pOk);
+        penceInp.classList.toggle("wrong", !cOk);
+        splitOk = pOk && cOk;
+      }
+      ok = exprOk && ansOk && splitOk;
+      if (exprOk && !splitOk) msg = `Дію записано правильно! Тепер порахуй фунти й пенси.<br>💡 ${q.splitHint}`;
+      else if (!exprOk && !ansOk) msg = `Перевір і дію, і відповідь.<br>💡 ${q.exprHint}`;
       else if (!exprOk) msg = !ex ? "Запиши дію числами, наприклад: 1.25 + 1.15"
                               : `Відповідь правильна, а дію треба записати повністю.<br>💡 ${q.exprHint}`;
       else msg = `Дію записано правильно! А відповідь ще ні — порахуй уважно.<br>💡 ${q.hint}`;
@@ -432,6 +463,10 @@
       const expr = q.numbers.map(n => n.toFixed(2)).join(q.op === "+" ? " + " : " − ");
       card.querySelector('[data-role="expr"]').value = expr;
       card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
+      if (q.split) {
+        card.querySelector('[data-role="pounds"]').value = q.split.pounds;
+        card.querySelector('[data-role="pence"]').value = q.split.pence;
+      }
     } else if (q.type === "money") {
       card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
     } else {
