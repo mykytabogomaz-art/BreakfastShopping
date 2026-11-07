@@ -91,6 +91,9 @@
   }
 
   /* ---------- Запитання ---------- */
+  .right { min-width: 0; }
+  .progress { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+  .progress-fill { height: 100%; width: 0; background: var(--ok); border-radius: 999px; transition: width .5s ease; }
   .quiz {
     display: flex; flex-direction: column; gap: 12px;
     max-height: 75vh;
@@ -142,7 +145,7 @@
   .one-line input.answer { flex: 1 1 62px; width: 62px; }
   .one-line .eq-sign { font-size: 17px; flex: none; }
   .one-line .unit { font-size: 15px; flex: none; }
-  input.expr { flex: 1 1 320px; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
+  input.expr { flex: none; width: 72px; text-align: center; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
 
   .choices { display: flex; flex-wrap: wrap; gap: 10px; }
   .choice {
@@ -208,7 +211,6 @@
     .receipt .row small { display: inline; margin-left: 4px; }
     .q-card { padding: 12px 14px; }
     .q-text { font-size: 16px; }
-    input.expr { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -233,7 +235,10 @@
   </aside>
 
   <!-- Запитання -->
-  <main class="quiz" id="quiz"></main>
+  <div class="right">
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <main class="quiz" id="quiz"></main>
+  </div>
 </div>
 
 <script>
@@ -370,7 +375,6 @@
     }
 
     card.innerHTML = `
-      <div class="q-num">Запитання ${i + 1} з ${QUESTIONS.length}</div>
       <div class="q-text">${q.text}</div>
       ${body}
       <div class="actions">
@@ -405,6 +409,16 @@
     const first = card.querySelector("input.field");
     if (first) first.focus({ preventScroll: true });
     card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function clearFeedback(card) {
+    const fb = card.querySelector(".feedback");
+    fb.className = "feedback";
+    fb.innerHTML = "";
+  }
+
+  function updateProgress() {
+    document.getElementById("progressFill").style.width = (current / QUESTIONS.length * 100) + "%";
   }
 
   function showFeedback(card, kind, html) {
@@ -500,7 +514,7 @@
     if (ok) {
       if (attempts === 1) firstTry++;
       card.classList.add("solved");
-      showFeedback(card, "ok", `🎉 Правильно!<span class="calc">${q.explain}</span>`);
+      clearFeedback(card);
       finish(card);
     } else {
       showFeedback(card, "bad", msg);
@@ -529,7 +543,7 @@
       card.querySelectorAll(".choice").forEach(b => b.classList.toggle("selected", q.answer.includes(b.dataset.id)));
     }
     card.querySelectorAll("input.field").forEach(i => i.classList.remove("wrong"));
-    showFeedback(card, "ok", `Правильна відповідь:<span class="calc">${q.explain}</span>`);
+    clearFeedback(card);
     finish(card);
   }
 
@@ -539,6 +553,7 @@
     card.querySelectorAll("input.field").forEach(i => i.classList.add("right"));
     card.querySelector(".actions").remove();
     current++;
+    updateProgress();
     if (current < QUESTIONS.length) setTimeout(() => renderQuestion(current), 500);
     else setTimeout(renderFinal, 500);
   }
@@ -562,6 +577,7 @@
     box.querySelector("button").addEventListener("click", () => {
       quiz.innerHTML = "";
       current = 0; firstTry = 0;
+      updateProgress();
       window.scrollTo({ top: 0, behavior: "smooth" });
       renderQuestion(0);
     });
