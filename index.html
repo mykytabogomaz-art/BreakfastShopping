@@ -78,11 +78,8 @@
     justify-content: space-between;
     gap: 10px;
     padding: 5px 6px;
-    border-radius: 6px;
-    transition: background .25s;
   }
   .receipt .row small { display: block; color: var(--muted); font-family: "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; }
-  .receipt .row.hl { background: #fff1b8; }
   .receipt .price { font-weight: 700; white-space: nowrap; }
   .paid {
     display: inline-block;
@@ -94,41 +91,42 @@
   }
 
   /* ---------- Запитання ---------- */
-  .quiz {
+  .quiz { display: flex; flex-direction: column; gap: 16px; }
+  .q-card {
     background: var(--card);
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
-    padding: 20px 22px 24px;
-    min-height: 360px;
+    padding: 18px 22px 20px;
+    animation: slideIn .35s ease;
+    border-left: 6px solid var(--accent);
   }
-  .progress { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
-  .progress span {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-size: 15px; font-weight: 700;
-    background: #edf1f6; color: var(--muted);
-  }
-  .progress span.current { background: var(--accent); color: #fff; }
-  .progress span.done { background: var(--ok); color: #fff; }
-  .progress span.shown { background: #b9c3d1; color: #fff; }
-
-  .q-card { animation: slideIn .35s ease; }
+  .q-card.solved { border-left-color: var(--ok); }
+  .q-card.shown { border-left-color: #b9c3d1; }
   @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .q-num { color: var(--muted); font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-  .q-text { font-size: 22px; font-weight: 700; margin: 6px 0 18px; }
+  .q-text { font-size: 22px; font-weight: 700; margin: 4px 0 16px; }
 
-  .money-input { display: flex; align-items: center; gap: 8px; }
-  .money-input .pound { font-size: 26px; font-weight: 700; color: var(--accent); }
-  .money-input input {
+  .eq-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .eq-label { width: 100%; color: var(--muted); font-size: 16px; margin-bottom: -2px; }
+  .eq-sign { font-size: 30px; font-weight: 700; color: var(--accent); }
+  .money-input { display: flex; align-items: center; gap: 6px; }
+  .pound { font-size: 26px; font-weight: 700; color: var(--accent); }
+  input.field {
     font-size: 24px;
-    width: 150px;
     padding: 10px 12px;
     border: 2px solid var(--line);
     border-radius: 10px;
     outline: none;
+    color: var(--ink);
+    background: #fff;
+    font-family: inherit;
   }
-  .money-input input:focus { border-color: var(--accent); }
+  input.field:focus { border-color: var(--accent); }
+  input.field.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  input.field.right { border-color: var(--ok); background: var(--ok-soft); }
+  input.field:disabled { color: var(--ink); opacity: 1; }
+  input.answer { width: 130px; }
+  input.expr { flex: 1 1 360px; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
 
   .choices { display: flex; flex-wrap: wrap; gap: 10px; }
   .choice {
@@ -139,12 +137,14 @@
     border-radius: 12px;
     cursor: pointer;
     color: var(--ink);
+    font-family: inherit;
   }
-  .choice:hover { border-color: var(--accent); }
+  .choice:hover:not(:disabled) { border-color: var(--accent); }
   .choice.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+  .choice:disabled { cursor: default; }
   .choice small { display: block; color: var(--muted); font-size: 14px; font-weight: 400; }
 
-  .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
   button.btn {
     font-size: 18px;
     padding: 12px 22px;
@@ -152,14 +152,14 @@
     border-radius: 12px;
     cursor: pointer;
     font-weight: 700;
+    font-family: inherit;
   }
   .btn-check { background: var(--accent); color: #fff; }
   .btn-next { background: var(--ok); color: #fff; }
   .btn-reveal { background: #edf1f6; color: var(--ink); }
-  .btn:disabled { opacity: .45; cursor: default; }
 
   .feedback {
-    margin-top: 16px;
+    margin-top: 14px;
     padding: 12px 16px;
     border-radius: 12px;
     display: none;
@@ -168,9 +168,16 @@
   .feedback.bad { display: block; background: var(--bad-soft); color: #8a2119; }
   .feedback .calc { font-family: "Courier New", monospace; font-weight: 700; display: block; margin-top: 4px; }
 
-  .final { text-align: center; padding: 30px 10px; animation: slideIn .35s ease; }
-  .final .big { font-size: 56px; font-weight: 800; color: var(--accent); }
-  .final p { font-size: 20px; }
+  .final {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
+    text-align: center;
+    padding: 24px 16px;
+    animation: slideIn .35s ease;
+  }
+  .final .big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .final p { font-size: 20px; margin: 6px 0; }
 
   @media (max-width: 820px) {
     .wrap { grid-template-columns: 1fr; gap: 14px; padding-top: 12px; }
@@ -181,8 +188,9 @@
     .receipt { font-size: 15px; padding: 6px 10px; margin: 6px 0 8px; }
     .receipt .row { padding: 3px 4px; }
     .receipt .row small { display: inline; margin-left: 4px; }
-    .quiz { padding: 16px; min-height: 0; }
+    .q-card { padding: 16px; }
     .q-text { font-size: 20px; }
+    input.expr { flex-basis: 100%; font-size: 20px; }
   }
 </style>
 </head>
@@ -197,30 +205,34 @@
       <p>Марія зайшла до супермаркету <b>Tesco</b>. Вона хоче купити продукти для сніданку.</p>
       <p>Вона купила:</p>
       <div class="receipt">
-        <div class="row" data-item="bread"><span>🍞 sliced bread <small>нарізаний хліб</small></span><span class="price">£1.25</span></div>
-        <div class="row" data-item="milk"><span>🥛 milk, 1 litre <small>молоко</small></span><span class="price">£1.15</span></div>
-        <div class="row" data-item="banana"><span>🍌 banana <small>банан</small></span><span class="price">£0.25</span></div>
-        <div class="row" data-item="yogurt"><span>🥣 yogurt, 500 g <small>йогурт</small></span><span class="price">£1.30</span></div>
+        <div class="row"><span>🍞 sliced bread <small>нарізаний хліб</small></span><span class="price">£1.25</span></div>
+        <div class="row"><span>🥛 milk, 1 litre <small>молоко</small></span><span class="price">£1.15</span></div>
+        <div class="row"><span>🍌 banana <small>банан</small></span><span class="price">£0.25</span></div>
+        <div class="row"><span>🥣 yogurt, 500 g <small>йогурт</small></span><span class="price">£1.35</span></div>
       </div>
       <span class="paid">💷 Марія дала касиру £5</span>
     </div>
   </aside>
 
   <!-- Запитання -->
-  <main class="quiz">
-    <div class="progress" id="progress"></div>
-    <div id="stage"></div>
-  </main>
+  <main class="quiz" id="quiz"></main>
 </div>
 
 <script>
+  const PRICES = { bread: 1.25, milk: 1.15, banana: 0.25, yogurt: 1.35 };
+
   const QUESTIONS = [
     {
       text: "Скільки всього коштують покупки?",
-      type: "money",
-      answer: 3.95,
+      type: "expr",
+      exprLabel: "Запиши суму всіх продуктів:",
+      exprPlaceholder: "1.25 + ...",
+      op: "+",
+      numbers: [1.25, 1.15, 0.25, 1.35],
+      answer: 4.00,
+      exprHint: "Запиши через «+» ціни всіх чотирьох продуктів з чека.",
       hint: "Додай ціни всіх чотирьох продуктів.",
-      explain: "£1.25 + £1.15 + £0.25 + £1.30 = £3.95"
+      explain: "£1.25 + £1.15 + £0.25 + £1.35 = £4.00"
     },
     {
       text: "Скільки фунтів Марія заплатила касиру?",
@@ -230,11 +242,16 @@
       explain: "Марія дала касиру £5."
     },
     {
-      text: "Скільки грошей вона має отримати на решту?",
-      type: "money",
-      answer: 1.05,
-      hint: "Від суми, яку дала Марія, відніми вартість покупок (£3.95).",
-      explain: "£5.00 − £3.95 = £1.05"
+      text: "Скільки грошей залишилось після покупки? (решта)",
+      type: "expr",
+      exprLabel: "Запиши різницю:",
+      exprPlaceholder: "5 − ...",
+      op: "-",
+      numbers: [5, 4],
+      answer: 1.00,
+      exprHint: "Від суми, яку Марія дала касиру, відніми вартість усіх покупок.",
+      hint: "Порахуй: £5 мінус вартість покупок (£4.00).",
+      explain: "£5.00 − £4.00 = £1.00"
     },
     {
       text: "Які два продукти коштують разом £2.40?",
@@ -242,29 +259,6 @@
       answer: ["bread", "milk"],
       hint: "Спробуй додати ціни по два продукти. Сума має бути рівно £2.40.",
       explain: "Хліб + молоко: £1.25 + £1.15 = £2.40"
-    },
-    {
-      text: "Якщо Марія купить ще яблуко за £0.35, скільки коштуватимуть усі покупки?",
-      type: "money",
-      answer: 4.30,
-      hint: "До загальної суми (£3.95) додай ціну яблука.",
-      explain: "£3.95 + £0.35 = £4.30"
-    },
-    {
-      text: "Якщо Марія має £3, чи вистачить їй на хліб, молоко та банан?",
-      type: "yesno",
-      answer: "yes",
-      highlight: ["bread", "milk", "banana"],
-      hint: "Спочатку порахуй, скільки коштують хліб, молоко та банан, а потім порівняй з £3.",
-      explain: "£1.25 + £1.15 + £0.25 = £2.65. Це менше, ніж £3, тому вистачить (ще й залишиться £0.35)."
-    },
-    {
-      text: "Скільки грошей залишиться після покупки хліба та йогурту, якщо Марія має £5?",
-      type: "money",
-      answer: 2.45,
-      highlight: ["bread", "yogurt"],
-      hint: "Додай ціни хліба та йогурту, а потім відніми цю суму від £5.",
-      explain: "£1.25 + £1.30 = £2.55;  £5.00 − £2.55 = £2.45"
     }
   ];
 
@@ -275,197 +269,216 @@
     { id: "yogurt", label: "🥣 yogurt",       ua: "йогурт" }
   ];
 
+  const quiz = document.getElementById("quiz");
   let current = 0;
-  let attempts = 0;
   let firstTry = 0;
-  const status = []; // "done" | "shown"
 
-  const stage = document.getElementById("stage");
-  const progressEl = document.getElementById("progress");
-
-  function renderProgress() {
-    progressEl.innerHTML = "";
-    QUESTIONS.forEach((_, i) => {
-      const s = document.createElement("span");
-      s.textContent = i + 1;
-      if (status[i]) s.className = status[i];
-      else if (i === current) s.className = "current";
-      progressEl.appendChild(s);
-    });
-  }
-
-  function highlight(items) {
-    document.querySelectorAll(".receipt .row").forEach(r => {
-      r.classList.toggle("hl", !!items && items.includes(r.dataset.item));
-    });
-  }
-
+  /* ---------- допоміжне ---------- */
   function parseMoney(str) {
-    const clean = str.replace("£", "").replace(",", ".").trim();
+    const clean = str.replace(/£/g, "").replace(",", ".").trim();
     if (clean === "" || isNaN(Number(clean))) return null;
     return Number(clean);
   }
 
-  function renderQuestion() {
-    attempts = 0;
-    const q = QUESTIONS[current];
-    highlight(q.highlight);
-    renderProgress();
+  // Розбирає вираз типу "1.25 + 1.15 + 0.25" або "5 - 4" → {nums, ops, value}
+  function parseExpr(str) {
+    let s = str.replace(/£/g, "").replace(/,/g, ".").replace(/[−–—]/g, "-").replace(/\s+/g, "");
+    if (!/^[\d.+\-]+$/.test(s)) return null;
+    const parts = s.split(/([+\-])/).filter(p => p !== "");
+    if (parts.length < 3 || parts.length % 2 === 0) return null;
+    const nums = [], ops = [];
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        if (!/^\d*\.?\d+$/.test(parts[i])) return null;
+        nums.push(Number(parts[i]));
+      } else ops.push(parts[i]);
+    }
+    let value = nums[0];
+    ops.forEach((o, i) => { value = o === "+" ? value + nums[i + 1] : value - nums[i + 1]; });
+    return { nums, ops, value: Math.round(value * 100) / 100 };
+  }
 
-    let inputHtml = "";
-    if (q.type === "money") {
-      inputHtml = `<div class="money-input"><span class="pound">£</span>
-        <input id="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>`;
+  const eq = (a, b) => Math.abs(a - b) < 0.001;
+
+  function sameNumbers(a, b) {
+    if (a.length !== b.length) return false;
+    const x = [...a].sort((p, q) => p - q), y = [...b].sort((p, q) => p - q);
+    return x.every((v, i) => eq(v, y[i]));
+  }
+
+  /* ---------- побудова картки ---------- */
+  function renderQuestion(i) {
+    const q = QUESTIONS[i];
+    const card = document.createElement("section");
+    card.className = "q-card";
+    card.dataset.attempts = "0";
+
+    let body = "";
+    if (q.type === "expr") {
+      body = `
+        <div class="eq-row">
+          <div class="eq-label">${q.exprLabel}</div>
+          <input class="field expr" data-role="expr" inputmode="decimal" autocomplete="off" placeholder="${q.exprPlaceholder}">
+          <span class="eq-sign">=</span>
+          <span class="money-input"><span class="pound">£</span>
+            <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></span>
+        </div>`;
+    } else if (q.type === "money") {
+      body = `<div class="money-input"><span class="pound">£</span>
+        <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>`;
     } else if (q.type === "pick2") {
-      inputHtml = `<p style="margin:0 0 10px;color:var(--muted)">Вибери два продукти:</p><div class="choices">` +
+      body = `<p style="margin:0 0 10px;color:var(--muted)">Вибери два продукти:</p><div class="choices">` +
         PRODUCTS.map(p => `<button class="choice" data-id="${p.id}">${p.label}<small>${p.ua}</small></button>`).join("") +
         `</div>`;
-    } else if (q.type === "yesno") {
-      inputHtml = `<div class="choices">
-        <button class="choice" data-id="yes">✅ Так, вистачить</button>
-        <button class="choice" data-id="no">❌ Ні, не вистачить</button></div>`;
     }
 
-    stage.innerHTML = `
-      <div class="q-card">
-        <div class="q-num">Запитання ${current + 1} з ${QUESTIONS.length}</div>
-        <div class="q-text">${q.text}</div>
-        ${inputHtml}
-        <div class="actions">
-          <button class="btn btn-check" id="check">Перевірити</button>
-          <button class="btn btn-reveal" id="reveal" style="display:none">Показати відповідь</button>
-          <button class="btn btn-next" id="next" style="display:none">Далі →</button>
-        </div>
-        <div class="feedback" id="fb"></div>
-      </div>`;
+    card.innerHTML = `
+      <div class="q-num">Запитання ${i + 1} з ${QUESTIONS.length}</div>
+      <div class="q-text">${q.text}</div>
+      ${body}
+      <div class="actions">
+        <button class="btn btn-check">Перевірити</button>
+        <button class="btn btn-reveal" style="display:none">Показати відповідь</button>
+      </div>
+      <div class="feedback"></div>`;
 
-    // вибір варіантів
-    stage.querySelectorAll(".choice").forEach(btn => {
+    quiz.appendChild(card);
+
+    card.querySelectorAll(".choice").forEach(btn => {
       btn.addEventListener("click", () => {
-        if (btn.disabled) return;
-        if (q.type === "yesno") {
-          stage.querySelectorAll(".choice").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-        } else {
-          const selected = stage.querySelectorAll(".choice.selected");
-          if (btn.classList.contains("selected")) btn.classList.remove("selected");
-          else if (selected.length < 2) btn.classList.add("selected");
-        }
+        const selected = card.querySelectorAll(".choice.selected");
+        if (btn.classList.contains("selected")) btn.classList.remove("selected");
+        else if (selected.length < 2) btn.classList.add("selected");
       });
     });
 
-    const input = document.getElementById("ans");
-    if (input) {
-      input.focus();
-      input.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-          const next = document.getElementById("next");
-          if (next.style.display !== "none") next.click();
-          else document.getElementById("check").click();
-        }
+    card.querySelectorAll("input.field").forEach(inp => {
+      inp.addEventListener("input", () => inp.classList.remove("wrong"));
+      inp.addEventListener("keydown", e => {
+        if (e.key !== "Enter") return;
+        if (inp.dataset.role === "expr") card.querySelector('[data-role="ans"]').focus();
+        else check(card, q);
       });
-    }
+    });
 
-    document.getElementById("check").addEventListener("click", check);
-    document.getElementById("reveal").addEventListener("click", reveal);
-    document.getElementById("next").addEventListener("click", goNext);
+    card.querySelector(".btn-check").addEventListener("click", () => check(card, q));
+    card.querySelector(".btn-reveal").addEventListener("click", () => reveal(card, q));
+
+    const first = card.querySelector("input.field");
+    if (first) first.focus({ preventScroll: true });
+    card.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
-  function getUserAnswer(q) {
-    if (q.type === "money") return parseMoney(document.getElementById("ans").value);
-    const sel = [...stage.querySelectorAll(".choice.selected")].map(b => b.dataset.id);
-    if (q.type === "pick2") return sel.length === 2 ? sel : null;
-    if (q.type === "yesno") return sel.length === 1 ? sel[0] : null;
-  }
-
-  function isCorrect(q, a) {
-    if (q.type === "money") return Math.abs(a - q.answer) < 0.001;
-    if (q.type === "pick2") return q.answer.every(id => a.includes(id));
-    return a === q.answer;
-  }
-
-  function showFeedback(kind, html) {
-    const fb = document.getElementById("fb");
+  function showFeedback(card, kind, html) {
+    const fb = card.querySelector(".feedback");
     fb.className = "feedback " + kind;
     fb.innerHTML = html;
   }
 
-  function lockInputs() {
-    stage.querySelectorAll("input, .choice").forEach(el => el.disabled = true);
-    document.getElementById("check").style.display = "none";
-    document.getElementById("reveal").style.display = "none";
-    const next = document.getElementById("next");
-    next.style.display = "inline-block";
-    next.textContent = current === QUESTIONS.length - 1 ? "Завершити ✓" : "Далі →";
-    next.focus();
-  }
+  /* ---------- перевірка ---------- */
+  function check(card, q) {
+    const exprInp = card.querySelector('[data-role="expr"]');
+    const ansInp = card.querySelector('[data-role="ans"]');
+    let ok = false, msg = "";
 
-  function check() {
-    const q = QUESTIONS[current];
-    const a = getUserAnswer(q);
-    if (a === null) {
-      const msg = q.type === "money" ? "Впиши число, наприклад 2.50"
-                : q.type === "pick2" ? "Вибери два продукти."
-                : "Вибери відповідь.";
-      showFeedback("bad", msg);
-      return;
+    if (q.type === "expr") {
+      const ex = parseExpr(exprInp.value);
+      const ans = parseMoney(ansInp.value);
+      if (exprInp.value.trim() === "" || ans === null) {
+        showFeedback(card, "bad", "Заповни обидва поля: запиши дію, а після «=» — відповідь.");
+        return;
+      }
+      const opsOk = ex && ex.ops.every(o => o === q.op);
+      const numsOk = ex && (q.op === "-"
+        ? ex.nums.length === q.numbers.length && ex.nums.every((v, k) => eq(v, q.numbers[k]))
+        : sameNumbers(ex.nums, q.numbers));
+      const exprOk = ex && opsOk && numsOk;
+      const ansOk = eq(ans, q.answer);
+      exprInp.classList.toggle("wrong", !exprOk);
+      ansInp.classList.toggle("wrong", !ansOk);
+      ok = exprOk && ansOk;
+      if (!exprOk && !ansOk) msg = `Перевір і дію, і відповідь.<br>💡 ${q.exprHint}`;
+      else if (!exprOk) msg = !ex ? "Запиши дію числами, наприклад: 1.25 + 1.15"
+                              : `Відповідь правильна, а дію треба записати повністю.<br>💡 ${q.exprHint}`;
+      else msg = `Дію записано правильно! А відповідь ще ні — порахуй уважно.<br>💡 ${q.hint}`;
+    } else if (q.type === "money") {
+      const ans = parseMoney(ansInp.value);
+      if (ans === null) { showFeedback(card, "bad", "Впиши число, наприклад 2.50"); return; }
+      ok = eq(ans, q.answer);
+      ansInp.classList.toggle("wrong", !ok);
+      msg = `Ще не так. Спробуй ще раз.<br>💡 ${q.hint}`;
+    } else if (q.type === "pick2") {
+      const sel = [...card.querySelectorAll(".choice.selected")].map(b => b.dataset.id);
+      if (sel.length !== 2) { showFeedback(card, "bad", "Вибери два продукти."); return; }
+      ok = q.answer.every(id => sel.includes(id));
+      msg = `Ще не так. Спробуй ще раз.<br>💡 ${q.hint}`;
     }
-    attempts++;
-    if (isCorrect(q, a)) {
+
+    const attempts = Number(card.dataset.attempts) + 1;
+    card.dataset.attempts = attempts;
+
+    if (ok) {
       if (attempts === 1) firstTry++;
-      status[current] = "done";
-      showFeedback("ok", `🎉 Правильно!<span class="calc">${q.explain}</span>`);
-      lockInputs();
-      renderProgress();
+      card.classList.add("solved");
+      showFeedback(card, "ok", `🎉 Правильно!<span class="calc">${q.explain}</span>`);
+      finish(card);
     } else {
-      showFeedback("bad", `Ще не так. Спробуй ще раз.<br>💡 ${q.hint}`);
-      if (attempts >= 2) document.getElementById("reveal").style.display = "inline-block";
+      showFeedback(card, "bad", msg);
+      if (attempts >= 2) card.querySelector(".btn-reveal").style.display = "inline-block";
     }
   }
 
-  function reveal() {
-    const q = QUESTIONS[current];
-    status[current] = "shown";
-    if (q.type === "money") {
-      document.getElementById("ans").value = q.answer.toFixed(2);
+  function reveal(card, q) {
+    card.classList.add("shown");
+    if (q.type === "expr") {
+      const expr = q.numbers.map(n => n.toFixed(2)).join(q.op === "+" ? " + " : " − ");
+      card.querySelector('[data-role="expr"]').value = expr;
+      card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
+    } else if (q.type === "money") {
+      card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
     } else {
-      const right = Array.isArray(q.answer) ? q.answer : [q.answer];
-      stage.querySelectorAll(".choice").forEach(b => b.classList.toggle("selected", right.includes(b.dataset.id)));
+      card.querySelectorAll(".choice").forEach(b => b.classList.toggle("selected", q.answer.includes(b.dataset.id)));
     }
-    showFeedback("ok", `Правильна відповідь:<span class="calc">${q.explain}</span>`);
-    lockInputs();
-    renderProgress();
+    card.querySelectorAll("input.field").forEach(i => i.classList.remove("wrong"));
+    showFeedback(card, "ok", `Правильна відповідь:<span class="calc">${q.explain}</span>`);
+    finish(card);
   }
 
-  function goNext() {
+  // Картка залишається на екрані, лише блокується; далі з'являється наступне питання
+  function finish(card) {
+    card.querySelectorAll("input, .choice").forEach(el => el.disabled = true);
+    card.querySelectorAll("input.field").forEach(i => i.classList.add("right"));
+    card.querySelector(".actions").remove();
     current++;
-    if (current < QUESTIONS.length) renderQuestion();
-    else renderFinal();
+    if (current < QUESTIONS.length) setTimeout(() => renderQuestion(current), 500);
+    else setTimeout(renderFinal, 500);
   }
 
   function renderFinal() {
-    highlight(null);
-    renderProgress();
     const total = QUESTIONS.length;
     const msg = firstTry === total ? "Чудово! Усе правильно з першої спроби! 🌟"
-              : firstTry >= total - 2 ? "Дуже добре! 👍"
+              : firstTry >= total - 1 ? "Дуже добре! 👍"
               : "Молодець, що дійшов до кінця! Спробуй ще раз 💪";
-    stage.innerHTML = `
-      <div class="final">
-        <div class="big">${firstTry} / ${total}</div>
-        <p>правильних відповідей з першої спроби</p>
-        <p><b>${msg}</b></p>
-        <div class="actions" style="justify-content:center">
-          <button class="btn btn-check" id="restart">Пройти ще раз ↻</button>
-        </div>
+    const box = document.createElement("section");
+    box.className = "final";
+    box.innerHTML = `
+      <div class="big">${firstTry} / ${total}</div>
+      <p>правильних відповідей з першої спроби</p>
+      <p><b>${msg}</b></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn btn-check">Пройти ще раз ↻</button>
       </div>`;
-    document.getElementById("restart").addEventListener("click", () => {
-      current = 0; firstTry = 0; status.length = 0;
-      renderQuestion();
+    quiz.appendChild(box);
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    box.querySelector("button").addEventListener("click", () => {
+      quiz.innerHTML = "";
+      current = 0; firstTry = 0;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      renderQuestion(0);
     });
   }
 
-  renderQuestion();
+  renderQuestion(0);
 </script>
 </body>
 </html>
