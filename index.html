@@ -226,7 +226,6 @@
       text: "Скільки всього коштують покупки?",
       type: "expr",
       exprLabel: "Запиши суму всіх продуктів:",
-      exprPlaceholder: "1.25 + ...",
       op: "+",
       numbers: [1.25, 1.15, 0.25, 1.35],
       answer: 4.00,
@@ -245,7 +244,6 @@
       text: "Скільки грошей залишилось після покупки? (решта)",
       type: "expr",
       exprLabel: "Запиши різницю:",
-      exprPlaceholder: "5 − ...",
       op: "-",
       numbers: [5, 4],
       answer: 1.00,
@@ -318,14 +316,14 @@
       body = `
         <div class="eq-row">
           <div class="eq-label">${q.exprLabel}</div>
-          <input class="field expr" data-role="expr" inputmode="decimal" autocomplete="off" placeholder="${q.exprPlaceholder}">
+          <input class="field expr" data-role="expr" inputmode="decimal" autocomplete="off">
           <span class="eq-sign">=</span>
           <span class="money-input"><span class="pound">£</span>
-            <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></span>
+            <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off"></span>
         </div>`;
     } else if (q.type === "money") {
       body = `<div class="money-input"><span class="pound">£</span>
-        <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>`;
+        <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off"></div>`;
     } else if (q.type === "pick2") {
       body = `<p style="margin:0 0 10px;color:var(--muted)">Вибери два продукти:</p><div class="choices">` +
         PRODUCTS.map(p => `<button class="choice" data-id="${p.id}">${p.label}<small>${p.ua}</small></button>`).join("") +
