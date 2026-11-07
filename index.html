@@ -135,6 +135,13 @@
   input.answer { width: 100px; }
   input.part { width: 70px; text-align: center; }
   .unit { font-size: 17px; font-weight: 700; color: var(--accent); }
+  .eq-row.one-line { flex-wrap: nowrap; gap: 4px; }
+  .one-line input.field { min-width: 0; padding: 6px 3px; text-align: center; font-size: 16px; }
+  .one-line input.price { flex: 1 1 58px; width: 58px; }
+  .one-line input.part { flex: 1 1 44px; width: 44px; }
+  .one-line input.answer { flex: 1 1 62px; width: 62px; }
+  .one-line .eq-sign { font-size: 17px; flex: none; }
+  .one-line .unit { font-size: 15px; flex: none; }
   input.expr { flex: 1 1 320px; min-width: 0; font-family: "Courier New", monospace; letter-spacing: .02em; }
 
   .choices { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -235,13 +242,13 @@
   const QUESTIONS = [
     {
       text: "Скільки всього коштують покупки?",
-      type: "expr",
-      exprLabel: "Запиши суму всіх продуктів:",
+      type: "sum4",
+      exprLabel: "Запиши ціну кожного продукту і порахуй суму:",
       op: "+",
       numbers: [1.25, 1.15, 0.25, 1.35],
       split: { pounds: 3, pence: 100 },
       answer: 4.00,
-      exprHint: "Запиши через «+» ціни всіх чотирьох продуктів з чека.",
+      exprHint: "У перші чотири клітинки запиши ціни продуктів з чека.",
       splitHint: "Склади окремо всі фунти (числа перед крапкою) і окремо всі пенси (числа після крапки).",
       hint: "Перетвори пенси на фунти: 100p = £1. Додай їх до фунтів.",
       explain: "£1.25 + £1.15 + £0.25 + £1.35 = £3 + 100p = £4.00"
@@ -325,7 +332,21 @@
     card.dataset.attempts = "0";
 
     let body = "";
-    if (q.type === "expr") {
+    if (q.type === "sum4") {
+      const priceBoxes = q.numbers.map(() =>
+        `<input class="field price" data-role="price" inputmode="decimal" autocomplete="off">`).join(`<span class="eq-sign">+</span>`);
+      body = `
+        <div class="eq-label">${q.exprLabel}</div>
+        <div class="eq-row one-line">
+          ${priceBoxes}
+          <span class="eq-sign">=</span>
+          <input class="field part" data-role="pounds" inputmode="numeric" autocomplete="off"><span class="unit">£</span>
+          <span class="eq-sign">+</span>
+          <input class="field part" data-role="pence" inputmode="numeric" autocomplete="off"><span class="unit">p</span>
+          <span class="eq-sign">=</span>
+          <span class="unit">£</span><input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off">
+        </div>`;
+    } else if (q.type === "expr") {
       body = `
         <div class="eq-row">
           <div class="eq-label">${q.exprLabel}</div>
@@ -398,7 +419,37 @@
     const ansInp = card.querySelector('[data-role="ans"]');
     let ok = false, msg = "";
 
-    if (q.type === "expr") {
+    if (q.type === "sum4") {
+      const priceInps = [...card.querySelectorAll('[data-role="price"]')];
+      const poundsInp = card.querySelector('[data-role="pounds"]');
+      const penceInp = card.querySelector('[data-role="pence"]');
+      const prices = priceInps.map(i => parseMoney(i.value));
+      const pounds = parseMoney(poundsInp.value);
+      const pence = parseMoney(penceInp.value.replace(/p/gi, ""));
+      const ans = parseMoney(ansInp.value);
+      if (prices.includes(null) || pounds === null || pence === null || ans === null) {
+        showFeedback(card, "bad", "Заповни всі клітинки.");
+        return;
+      }
+      // ціни можна писати в будь-якому порядку
+      const left = [...q.numbers];
+      let pricesOk = true;
+      priceInps.forEach((inp, k) => {
+        const idx = left.findIndex(v => eq(v, prices[k]));
+        const good = idx !== -1;
+        if (good) left.splice(idx, 1); else pricesOk = false;
+        inp.classList.toggle("wrong", !good);
+      });
+      const pOk = eq(pounds, q.split.pounds), cOk = eq(pence, q.split.pence);
+      poundsInp.classList.toggle("wrong", !pOk);
+      penceInp.classList.toggle("wrong", !cOk);
+      const ansOk = eq(ans, q.answer);
+      ansInp.classList.toggle("wrong", !ansOk);
+      ok = pricesOk && pOk && cOk && ansOk;
+      if (!pricesOk) msg = `Перевір ціни в червоних клітинках.<br>💡 ${q.exprHint}`;
+      else if (!(pOk && cOk)) msg = `Ціни записано правильно! Тепер порахуй фунти й пенси.<br>💡 ${q.splitHint}`;
+      else msg = `Майже! Перевір остаточну відповідь.<br>💡 ${q.hint}`;
+    } else if (q.type === "expr") {
       const ex = parseExpr(exprInp.value);
       const ans = parseMoney(ansInp.value);
       const poundsInp = card.querySelector('[data-role="pounds"]');
@@ -459,7 +510,12 @@
 
   function reveal(card, q) {
     card.classList.add("shown");
-    if (q.type === "expr") {
+    if (q.type === "sum4") {
+      card.querySelectorAll('[data-role="price"]').forEach((inp, k) => inp.value = q.numbers[k].toFixed(2));
+      card.querySelector('[data-role="pounds"]').value = q.split.pounds;
+      card.querySelector('[data-role="pence"]').value = q.split.pence;
+      card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
+    } else if (q.type === "expr") {
       const expr = q.numbers.map(n => n.toFixed(2)).join(q.op === "+" ? " + " : " − ");
       card.querySelector('[data-role="expr"]').value = expr;
       card.querySelector('[data-role="ans"]').value = q.answer.toFixed(2);
