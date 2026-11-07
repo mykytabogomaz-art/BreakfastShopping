@@ -343,7 +343,7 @@
       body = `<div class="money-input"><span class="pound">£</span>
         <input class="field answer" data-role="ans" inputmode="decimal" autocomplete="off"></div>`;
     } else if (q.type === "pick2") {
-      body = `<p style="margin:0 0 10px;color:var(--muted)">Вибери два продукти:</p><div class="choices">` +
+      body = `<p style="margin:0 0 8px;color:var(--muted);font-size:14px">Вибери два продукти:</p><div class="choices">` +
         PRODUCTS.map(p => `<button class="choice" data-id="${p.id}">${p.label}<small>${p.ua}</small></button>`).join("") +
         `</div>`;
     }
